@@ -3,6 +3,8 @@ defmodule AnalyseFruitsSP do
   Single process solution
   """
 
+  alias FileParser.InvalidStringFormatError
+
   @type result :: %{String.t() => integer()}
 
   @spec start() :: result
@@ -20,8 +22,7 @@ defmodule AnalyseFruitsSP do
     |> Enum.map(&FileParser.parse!/1)
     |> Enum.reduce(%{}, &merge/2)
   rescue
-    e in File.Error -> {:error, "Failed to read file: #{e.path}"}
-    e in FileParser.InvalidStringFormatError -> {:error, e.message}
+    e in [File.Error, InvalidStringFormatError] -> {:error, apply(e.__struct__, :message, [e])}
     e -> {:error, inspect(e)}
   end
 

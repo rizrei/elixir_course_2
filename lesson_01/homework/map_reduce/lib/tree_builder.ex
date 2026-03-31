@@ -1,7 +1,11 @@
 defmodule TreeBuilder do
+  @moduledoc """
+  Builds a tree of mappers and reducers for MapReduce solution
+  """
+
   @type mapper_id() :: integer()
   @type reducer_id() :: {integer(), integer()}
-  @type mapper :: {:mapper, mapper_id(), String.t()}
+  @type mapper() :: {:mapper, mapper_id(), String.t()}
   @type reducer() :: {:reducer, reducer_id(), [mapper()] | [reducer()]}
 
   @spec build([String.t()], pos_integer()) :: reducer()
