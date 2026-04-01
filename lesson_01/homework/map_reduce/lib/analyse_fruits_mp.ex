@@ -17,7 +17,8 @@ defmodule AnalyseFruitsMP do
   @spec start([String.t()], integer()) :: {:ok, %{String.t() => integer()}} | {:error, term()}
   def start(files, processes_per_level \\ 4) do
     files
-    |> TreeBuilder.build(processes_per_level)
+    |> Tree.new(processes_per_level)
+    |> Tree.build()
     |> AnalyseFruitsMP.Coordinator.start_process()
 
     Process.flag(:trap_exit, true)
@@ -32,12 +33,12 @@ defmodule AnalyseFruitsMP do
 
   defmodule Coordinator do
     @moduledoc """
-    Starts processes according to tree built by TreeBuilder and waits for results
+    Starts processes according to tree built by Tree and waits for results
     """
 
     alias AnalyseFruitsMP.{Reducer, Mapper}
 
-    @type process() :: TreeBuilder.mapper() | TreeBuilder.reducer()
+    @type process() :: Tree.mapper() | Tree.reducer()
 
     @spec start_process(process()) :: pid()
     def start_process({:reducer, _id, children}) do
@@ -99,7 +100,7 @@ defmodule AnalyseFruitsMP do
       end
     end
 
-    @spec run(pid(), [TreeBuilder.mapper() | TreeBuilder.reducer()]) :: no_return()
+    @spec run(pid(), [Tree.mapper() | Tree.reducer()]) :: no_return()
     def run(parent, nodes) do
       loop(State.new(parent, AnalyseFruitsMP.Coordinator.start_processes(nodes)))
     end

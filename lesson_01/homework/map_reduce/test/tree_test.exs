@@ -1,30 +1,23 @@
-defmodule TreeBuilderTest do
-  use ExUnit.Case
+defmodule V2.TreeBuilderTest do
+  use ExUnit.Case, async: true
+
+  import Tree
 
   test "invalid per_level" do
-    assert TreeBuilder.build(["1.csv"], 1) == {:reducer, {1, 1}, [{:mapper, 1, "1.csv"}]}
+    assert new(["1.csv"], 1) |> build() == {:reducer, {1, 1}, [{:mapper, 1, "1.csv"}]}
   end
 
   test "build simple processes tree" do
-    assert TreeBuilder.build(
-             ["1.csv"],
-             4
-           ) == {:reducer, {1, 1}, [{:mapper, 1, "1.csv"}]}
+    assert new(["1.csv"], 4) |> build() == {:reducer, {1, 1}, [{:mapper, 1, "1.csv"}]}
 
-    assert TreeBuilder.build(
-             ["1.csv", "2.csv"],
-             4
-           ) ==
+    assert new(["1.csv", "2.csv"], 4) |> build() ==
              {:reducer, {1, 2},
               [
                 {:mapper, 1, "1.csv"},
                 {:mapper, 2, "2.csv"}
               ]}
 
-    assert TreeBuilder.build(
-             ["1.csv", "2.csv", "3.csv", "4.csv"],
-             4
-           ) ==
+    assert new(["1.csv", "2.csv", "3.csv", "4.csv"], 4) |> build() ==
              {:reducer, {1, 4},
               [
                 {:mapper, 1, "1.csv"},
@@ -35,10 +28,7 @@ defmodule TreeBuilderTest do
   end
 
   test "build complex processes tree" do
-    assert TreeBuilder.build(
-             ["1.csv", "2.csv", "3.csv", "4.csv"],
-             2
-           ) ==
+    assert new(["1.csv", "2.csv", "3.csv", "4.csv"], 2) |> build() ==
              {:reducer, {1, 4},
               [
                 {:reducer, {1, 2},
@@ -53,10 +43,7 @@ defmodule TreeBuilderTest do
                  ]}
               ]}
 
-    assert TreeBuilder.build(
-             ["1.csv", "2.csv", "3.csv", "4.csv"],
-             3
-           ) ==
+    assert new(["1.csv", "2.csv", "3.csv", "4.csv"], 3) |> build() ==
              {:reducer, {1, 4},
               [
                 {:reducer, {1, 3},
@@ -85,10 +72,7 @@ defmodule TreeBuilderTest do
       "data_9.csv"
     ]
 
-    assert TreeBuilder.build(
-             files,
-             4
-           ) ==
+    assert new(files, 4) |> build() ==
              {:reducer, {1, 9},
               [
                 {:reducer, {1, 4},
@@ -111,10 +95,7 @@ defmodule TreeBuilderTest do
                  ]}
               ]}
 
-    assert TreeBuilder.build(
-             files,
-             3
-           ) ==
+    assert new(files, 3) |> build() ==
              {:reducer, {1, 9},
               [
                 {:reducer, {1, 3},
@@ -137,10 +118,7 @@ defmodule TreeBuilderTest do
                  ]}
               ]}
 
-    assert TreeBuilder.build(
-             files,
-             5
-           ) ==
+    assert new(files, 5) |> build() ==
              {:reducer, {1, 9},
               [
                 {:reducer, {1, 5},
@@ -176,10 +154,7 @@ defmodule TreeBuilderTest do
       "d11.csv"
     ]
 
-    assert TreeBuilder.build(
-             files,
-             2
-           ) ==
+    assert new(files, 2) |> build() ==
              {:reducer, {1, 11},
               [
                 {:reducer, {1, 8},
