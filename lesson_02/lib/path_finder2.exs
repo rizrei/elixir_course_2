@@ -1,21 +1,18 @@
 defmodule PathFinder2 do
-
   use GenServer
 
-  @type city :: String.t
+  @type city :: String.t()
   @type distance :: integer
   @type route :: {[city], distance}
 
   @server_name __MODULE__
   @data_file "./data/cities.csv"
-  
 
   # Module API
-  
-  def start() do
-    GenServer.start(__MODULE__, @data_file, [name: @server_name])
-  end
 
+  def start() do
+    GenServer.start(__MODULE__, @data_file, name: @server_name)
+  end
 
   @spec get_route(city, city) :: {:ok, route} | {:error, term}
   def get_route(from_city, to_city) do
@@ -25,7 +22,6 @@ defmodule PathFinder2 do
   def reload_data() do
     GenServer.cast(@server_name, :reload_data)
   end
-  
 
   # GenServer callbacks
 
@@ -46,26 +42,30 @@ defmodule PathFinder2 do
     new_state = init_state(data_file)
     {:noreply, new_state}
   end
-  
+
   @impl true
   def handle_call({:get_route, from_city, to_city}, _from, state) do
     %{graph: graph, distances: distances} = state
+
     reply =
       case :digraph.get_short_path(graph, from_city, to_city) do
-        false -> {:error, :no_route} 
+        false ->
+          {:error, :no_route}
+
         route ->
           distance = get_distance(distances, route)
           {:ok, route, distance}
       end
+
     {:reply, reply, state}
   end
 
   # catch all
   def handle_call(msg, from, state) do
-    IO.puts("Server got unknow call #{inspect msg} from #{inspect from}")
+    IO.puts("Server got unknow call #{inspect(msg)} from #{inspect(from)}")
     {:reply, {:error, :invalid_call}, state}
   end
-  
+
   @impl true
   def handle_cast(:reload_data, state) do
     # NOTE: don't do `:digraph.delete(graph)` here
@@ -74,31 +74,31 @@ defmodule PathFinder2 do
 
   # catch all
   def handle_cast(msg, state) do
-    IO.puts("Server got unknow cast #{inspect msg}")
-    {:noreply, state} 
+    IO.puts("Server got unknow cast #{inspect(msg)}")
+    {:noreply, state}
   end
 
   @impl true
   def handle_info(msg, state) do
-    IO.puts("Server got msg #{inspect msg}")
+    IO.puts("Server got msg #{inspect(msg)}")
     {:noreply, state}
   end
-  
 
   # Inner functions
 
   def init_state(file_name) do
     csv_data = load_csv_data(file_name)
     graph = :digraph.new([:cyclic])
-    Enum.each(csv_data, fn(line) -> init_graph(graph, line) end)
+    Enum.each(csv_data, fn line -> init_graph(graph, line) end)
     distances = init_distances(csv_data)
+
     %{
       graph: graph,
       distances: distances,
       data_file: file_name
     }
   end
-  
+
   def load_csv_data(file_name) do
     File.read!(file_name)
     |> String.split()
@@ -119,28 +119,29 @@ defmodule PathFinder2 do
   end
 
   def init_distances(csv_data) do
-    Enum.reduce(csv_data, %{},
-      fn ({city1, city2, dist}, acc) ->
-        key = make_key(city1, city2)
-        Map.put(acc, key, dist)
-      end)
+    Enum.reduce(csv_data, %{}, fn {city1, city2, dist}, acc ->
+      key = make_key(city1, city2)
+      Map.put(acc, key, dist)
+    end)
   end
 
   def make_key(city1, city2) do
     [city1, city2] |> Enum.sort() |> List.to_tuple()
   end
-  
+
   def get_distance([], _distances), do: 0
+
   def get_distance(distancies, path) do
     [first | rest] = path
+
     Enum.reduce(
       rest,
       {first, 0},
-      fn (city, {prev_city, dist}) ->
+      fn city, {prev_city, dist} ->
         key = make_key(city, prev_city)
         {city, dist + Map.fetch!(distancies, key)}
-      end)
+      end
+    )
     |> elem(1)
   end
-  
 end
