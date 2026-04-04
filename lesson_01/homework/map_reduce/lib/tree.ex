@@ -1,8 +1,4 @@
 defmodule Tree do
-  @moduledoc """
-  Builds tree of processes for map-reduce solution
-  """
-
   defmodule Chunk do
     @moduledoc """
     Chunk of mappers or reducers, used to build tree level by level
@@ -52,6 +48,10 @@ defmodule Tree do
       {:reducer, {first, last}, Enum.reverse(items)}
     end
   end
+
+  @moduledoc """
+  Builds tree of processes for map-reduce solution
+  """
 
   defstruct [:level, :files, chunks: []]
 
