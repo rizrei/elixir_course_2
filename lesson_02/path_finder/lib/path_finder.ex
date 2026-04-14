@@ -3,6 +3,7 @@ defmodule PathFinder do
     @moduledoc """
     State of GenServer, contains graph and data file path
     """
+    @enforce_keys [:data_file]
     defstruct [:graph, :data_file]
 
     @type t :: %__MODULE__{
@@ -21,13 +22,27 @@ defmodule PathFinder do
     end
 
     @spec get_route(t(), String.t(), String.t()) ::
-            {:ok, [String.t()], non_neg_integer()} | {:error, :no_route}
+            {:ok, {[String.t()], non_neg_integer()}} | {:error, :no_route}
+    def get_route(%State{}, city, city), do: {:ok, {[city], 0}}
+
     def get_route(%State{graph: graph}, from_city, to_city) do
       case Graph.get_shortest_path(graph, from_city, to_city) do
         [_ | _] = route -> {:ok, {route, get_distance(graph, route)}}
         _ -> {:error, :no_route}
       end
     end
+
+    @spec add_route(t(), String.t(), String.t(), non_neg_integer()) :: t()
+    def add_route(%State{graph: graph} = state, from_city, to_city, distance) do
+      new_graph =
+        graph
+        |> add_edge(%{"CityFrom" => from_city, "CityTo" => to_city, "Distance" => distance})
+
+      %{state | graph: new_graph}
+    end
+
+    @spec get_city_list(t()) :: [String.t()]
+    def get_city_list(%State{graph: graph}), do: Graph.vertices(graph) |> Enum.sort()
 
     defp add_edge(graph, %{"CityFrom" => city1, "CityTo" => city2, "Distance" => distance}) do
       graph
@@ -40,8 +55,7 @@ defmodule PathFinder do
     defp get_distance(graph, route) do
       route
       |> Stream.chunk_every(2, 1, :discard)
-      |> Stream.map(fn [city1, city2] -> Graph.edge(graph, city1, city2) end)
-      |> Stream.map(fn %Graph.Edge{weight: weight} -> weight end)
+      |> Stream.map(fn [city1, city2] -> Graph.edge(graph, city1, city2).weight end)
       |> Enum.sum()
     end
   end
@@ -55,7 +69,7 @@ defmodule PathFinder do
   require Logger
 
   @type city() :: String.t()
-  @type distance() :: integer
+  @type distance() :: non_neg_integer()
   @type route() :: {[city()], distance()}
 
   @server_name __MODULE__
@@ -80,6 +94,14 @@ defmodule PathFinder do
     GenServer.call(@server_name, {:get_route, from_city, to_city})
   end
 
+  @spec add_route(city(), city(), distance()) :: :ok
+  def add_route(from_city, to_city, distance) do
+    GenServer.cast(@server_name, {:add_route, from_city, to_city, distance})
+  end
+
+  @spec get_city_list() :: [city()]
+  def get_city_list(), do: GenServer.call(@server_name, :get_city_list)
+
   @spec reload_data() :: :ok
   def reload_data(), do: GenServer.cast(@server_name, :reload_data)
 
@@ -99,12 +121,20 @@ defmodule PathFinder do
     {:reply, State.get_route(state, from_city, to_city), state}
   end
 
+  def handle_call(:get_city_list, _from, state) do
+    {:reply, State.get_city_list(state), state}
+  end
+
   def handle_call(msg, from, state) do
-    Logger.warning("Server got unknow call #{inspect(msg)} from #{inspect(from)}")
+    Logger.warning("Server got unknown call #{inspect(msg)} from #{inspect(from)}")
     {:reply, {:error, :invalid_call}, state}
   end
 
   @impl true
+  def handle_cast({:add_route, from_city, to_city, distance}, state) do
+    {:noreply, State.add_route(state, from_city, to_city, distance)}
+  end
+
   def handle_cast(:reload_data, state) do
     {:noreply, state, {:continue, :build_graph}}
   end
