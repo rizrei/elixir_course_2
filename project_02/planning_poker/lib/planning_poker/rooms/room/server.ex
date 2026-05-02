@@ -1,6 +1,7 @@
 defmodule PlanningPoker.Rooms.Room.Server do
   use GenServer
 
+  alias PlanningPoker.PubSub
   alias PlanningPoker.Rooms.Room
   alias PlanningPoker.Users.User
 
@@ -29,7 +30,10 @@ defmodule PlanningPoker.Rooms.Room.Server do
   def clear_votes(room_pid), do: GenServer.cast(room_pid, :clear_votes)
 
   @impl true
-  def init(room_name), do: {:ok, Room.new(room_name)}
+  def init(room_name) do
+    PubSub.subscribe(:pubsub, "users")
+    {:ok, Room.new(room_name)}
+  end
 
   @impl true
   def handle_call({:join, user}, _from, room) do
@@ -66,6 +70,14 @@ defmodule PlanningPoker.Rooms.Room.Server do
   def handle_cast(:clear_votes, room), do: {:noreply, Room.clear_votes(room)}
 
   def handle_cast({:change_topic, topic}, room), do: {:noreply, Room.change_topic(room, topic)}
+
+  @impl true
+  def handle_info({:user_disconnect, user}, room) do
+    case Room.leave(room, user) do
+      %Room{} = new_room -> {:noreply, new_room}
+      _ -> {:noreply, room}
+    end
+  end
 
   defp via_registry(room_name), do: {:via, Registry, {Room.Registry, room_name}}
 end

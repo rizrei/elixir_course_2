@@ -10,6 +10,7 @@ defmodule PlanningPoker.System do
   def init(_) do
     children = [
       {Registry, [keys: :unique, name: Room.Registry]},
+      {PlanningPoker.PubSub, name: :pubsub},
       Room.Supervisor
     ]
 
