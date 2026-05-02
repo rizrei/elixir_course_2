@@ -14,7 +14,7 @@ defmodule PlanningPoker.Rooms.Room.Supervisor do
   def find_room(room_name) do
     case Registry.lookup(Room.Registry, room_name) do
       [{room_pid, _}] -> {:ok, room_pid}
-      [] -> {:error, :not_found}
+      [] -> {:error, :room_not_found}
     end
   end
 

@@ -8,4 +8,7 @@ defmodule PlanningPoker.Users.User do
         }
 
   defstruct [:id, :name, :role]
+
+  @spec leader?(t()) :: boolean()
+  def leader?(%{role: role}), do: role == :leader
 end
