@@ -1,5 +1,5 @@
-defmodule PlanningPoker.UsersDatabase do
-  alias PlanningPoker.Model.User
+defmodule PlanningPoker.Users do
+  alias PlanningPoker.Users.User
 
   def get_users() do
     [
@@ -10,12 +10,12 @@ defmodule PlanningPoker.UsersDatabase do
     ]
   end
 
-  def get_by_name(name) do
+  def get_user_by_name(name) do
     get_users()
-    |> Enum.filter(fn user -> user.name == name end)
+    |> Enum.find(&(&1.name == name))
     |> case do
-      [user] -> {:ok, user}
-      [] -> {:error, :not_found}
+      %User{} = user -> {:ok, user}
+      _ -> {:error, :user_not_found}
     end
   end
 end

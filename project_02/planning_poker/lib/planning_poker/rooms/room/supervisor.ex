@@ -10,7 +10,11 @@ defmodule PlanningPoker.Rooms.Room.Supervisor do
 
   @spec start_room(String.t()) :: DynamicSupervisor.on_start_child()
   def start_room(room_name) do
-    DynamicSupervisor.start_child(__MODULE__, {Room.Server, room_name})
+    case DynamicSupervisor.start_child(__MODULE__, {Room.Server, room_name}) do
+      {:ok, pid} -> {:ok, pid}
+      {:error, {:already_started, _}} -> {:error, :room_already_started}
+      {:error, _} = error -> error
+    end
   end
 
   @spec stop_room(pid()) :: :ok | {:error, :room_not_found}
@@ -18,6 +22,7 @@ defmodule PlanningPoker.Rooms.Room.Supervisor do
     case DynamicSupervisor.terminate_child(__MODULE__, room_pid) do
       :ok -> :ok
       {:error, :not_found} -> {:error, :room_not_found}
+      {:error, _} = error -> error
     end
   end
 

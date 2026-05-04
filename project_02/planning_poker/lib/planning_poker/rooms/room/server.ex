@@ -72,7 +72,7 @@ defmodule PlanningPoker.Rooms.Room.Server do
   def handle_cast({:change_topic, topic}, room), do: {:noreply, Room.change_topic(room, topic)}
 
   @impl true
-  def handle_info({:user_disconnect, user}, room) do
+  def handle_info({:user_logout, user}, room) do
     case Room.leave(room, user) do
       %Room{} = new_room -> {:noreply, new_room}
       _ -> {:noreply, room}
