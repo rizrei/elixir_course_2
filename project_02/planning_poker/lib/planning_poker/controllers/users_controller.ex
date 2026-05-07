@@ -1,7 +1,7 @@
 defmodule PlanningPoker.Controllers.UsersController do
   alias PlanningPoker.Users
   alias PlanningPoker.Sockets.Socket
-  alias PlanningPoker.Serializers.UsersSerializer
+  alias PlanningPoker.Serializers.{ErrorsSerializer, UsersSerializer}
 
   @spec login(Socket.t(), String.t()) :: {:ok, {Socket.t(), String.t()}}
   def login(socket, username) do
@@ -9,8 +9,8 @@ defmodule PlanningPoker.Controllers.UsersController do
       {:ok, user} ->
         {:ok, {Socket.login(socket, user), UsersSerializer.serialize(:login, user)}}
 
-      {:error, :user_not_found} ->
-        {:ok, {socket, "User #{username} not found"}}
+      {:error, _} = error ->
+        {:ok, {socket, ErrorsSerializer.serialize(error)}}
     end
   end
 

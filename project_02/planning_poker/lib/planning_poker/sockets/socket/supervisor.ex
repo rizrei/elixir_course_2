@@ -10,7 +10,7 @@ defmodule PlanningPoker.Sockets.Socket.Supervisor do
 
   @impl true
   def init(_) do
-    {:ok, port} = Application.fetch_env!(:planning_poker, :port) |> listen_socket()
+    {:ok, port} = listen_socket()
 
     [
       :poolboy.child_spec(
@@ -27,7 +27,9 @@ defmodule PlanningPoker.Sockets.Socket.Supervisor do
     |> Supervisor.init(strategy: :one_for_one)
   end
 
-  defp listen_socket(port) do
+  defp listen_socket() do
+    port = Application.fetch_env!(:planning_poker, :port)
+
     options = [
       :binary,
       {:active, false},

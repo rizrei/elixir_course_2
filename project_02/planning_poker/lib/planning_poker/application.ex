@@ -1,8 +1,17 @@
 defmodule PlanningPoker.Application do
   use Application
 
-  require Logger
+  alias PlanningPoker.Rooms.Room
+  alias PlanningPoker.Sockets.Socket
 
   @impl true
-  def start(_start_type, _args), do: PlanningPoker.System.start_link([])
+  def start(_start_type, _args) do
+    [
+      {Registry, [keys: :unique, name: Room.Registry]},
+      {PlanningPoker.PubSub, name: :pubsub},
+      Room.Supervisor,
+      Socket.Supervisor
+    ]
+    |> Supervisor.start_link(strategy: :one_for_one)
+  end
 end
