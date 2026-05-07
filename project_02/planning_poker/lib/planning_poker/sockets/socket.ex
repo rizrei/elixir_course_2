@@ -1,5 +1,4 @@
 defmodule PlanningPoker.Sockets.Socket do
-  alias PlanningPoker.PubSub
   alias PlanningPoker.Users.User
   alias PlanningPoker.Sockets.Socket.Router
 

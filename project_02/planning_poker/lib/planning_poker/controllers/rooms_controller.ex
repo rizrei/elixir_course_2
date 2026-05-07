@@ -1,10 +1,8 @@
 defmodule PlanningPoker.Controllers.RoomsController do
-  require Logger
   alias PlanningPoker.Rooms
   alias PlanningPoker.Rooms.Room
   alias PlanningPoker.Sockets.Socket
-  alias PlanningPoker.Serializers.RoomsSerializer
-  alias PlanningPoker.Serializers.ErrorsSerializer
+  alias PlanningPoker.Serializers.{ErrorsSerializer, RoomsSerializer}
 
   def index(socket) do
     {:ok, {socket, RoomsSerializer.serialize(:index, Rooms.list_rooms())}}

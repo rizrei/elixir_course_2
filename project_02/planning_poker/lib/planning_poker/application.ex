@@ -4,7 +4,7 @@ defmodule PlanningPoker.Application do
   require Logger
 
   def start(_start_type, _args) do
-    PlanningPoker.System.start_link()
+    PlanningPoker.System.start_link([])
   end
 
   # defmodule RootSup do

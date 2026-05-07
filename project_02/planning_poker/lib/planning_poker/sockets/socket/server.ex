@@ -4,7 +4,7 @@ defmodule PlanningPoker.Sockets.Socket.Server do
   require Logger
   alias PlanningPoker.Sockets.Socket
 
-  def start_link(port), do: GenServer.start_link(__MODULE__, port)
+  def start_link(args), do: GenServer.start_link(__MODULE__, Keyword.fetch!(args, :port))
 
   # def send_event(session_pid, event) do
   #   Logger.info("Session.send_event #{inspect(session_pid)} #{inspect(event)}")

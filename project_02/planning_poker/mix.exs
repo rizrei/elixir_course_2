@@ -21,6 +21,7 @@ defmodule PlanningPoker.MixProject do
 
   defp deps do
     [
+      {:poolboy, "~> 1.5.1"},
       {:dialyxir, "~> 1.4", only: [:dev], runtime: false},
       {:credo, "~> 1.7", only: [:dev], runtime: false}
     ]
