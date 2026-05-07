@@ -3,6 +3,7 @@ defmodule PlanningPoker.Sockets.Socket do
   alias PlanningPoker.Users
   alias PlanningPoker.Users.User
   alias PlanningPoker.Sockets.Socket.Router
+  alias PlanningPoker.Serializers.ErrorsSerializer
 
   defstruct [:socket_pid, :port, :user]
 
@@ -16,9 +17,9 @@ defmodule PlanningPoker.Sockets.Socket do
   def handle_request(socket, request) do
     with {:ok, {controller, action, args}} <- Router.route(request),
          {:ok, {socket, msg}} <- apply(controller, action, [socket | args]) do
-      {socket, msg}
+      {socket, msg <> "\n"}
     else
-      {:error, :invalid_route} -> {socket, "Unknown request"}
+      {:error, :invalid_route} = error -> {socket, ErrorsSerializer.serialize(error)}
     end
   end
 

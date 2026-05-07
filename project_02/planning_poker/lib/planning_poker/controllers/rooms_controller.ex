@@ -5,12 +5,12 @@ defmodule PlanningPoker.Controllers.RoomsController do
   alias PlanningPoker.Serializers.{ErrorsSerializer, RoomsSerializer}
 
   def index(socket) do
-    {:ok, {socket, RoomsSerializer.serialize(:index, Rooms.list_rooms())}}
+    {:ok, {socket, RoomsSerializer.serialize(:index, Rooms.list())}}
   end
 
   def show(%{user: user} = socket, room_name) do
     with :ok <- Socket.authenticate_user(socket),
-         %Room{} = room <- Rooms.show_room(room_name, user) do
+         %Room{} = room <- Rooms.show(room_name, user) do
       {:ok, {socket, RoomsSerializer.serialize(:show, room)}}
     else
       {:error, _} = error -> {:ok, {socket, ErrorsSerializer.serialize(error)}}
@@ -20,7 +20,7 @@ defmodule PlanningPoker.Controllers.RoomsController do
   @spec create(Socket.t(), String.t()) :: {:ok, {Socket.t(), String.t()}}
   def create(%{user: user} = socket, room_name) do
     with :ok <- Socket.authenticate_user(socket),
-         :ok <- Rooms.create_room(room_name, user) do
+         :ok <- Rooms.create(room_name, user) do
       {:ok, {socket, RoomsSerializer.serialize(:create, room_name)}}
     else
       {:error, _} = error -> {:ok, {socket, ErrorsSerializer.serialize(error)}}
@@ -30,7 +30,7 @@ defmodule PlanningPoker.Controllers.RoomsController do
   @spec delete(Socket.t(), String.t()) :: {:ok, {Socket.t(), String.t()}}
   def delete(%{user: user} = socket, room_name) do
     with :ok <- Socket.authenticate_user(socket),
-         :ok <- Rooms.delete_room(room_name, user) do
+         :ok <- Rooms.delete(room_name, user) do
       {:ok, {socket, RoomsSerializer.serialize(:delete, room_name)}}
     else
       {:error, _} = error -> {:ok, {socket, ErrorsSerializer.serialize(error)}}
@@ -40,7 +40,7 @@ defmodule PlanningPoker.Controllers.RoomsController do
   @spec join(Socket.t(), String.t()) :: {:ok, {Socket.t(), String.t()}}
   def join(%{user: user} = socket, room_name) do
     with :ok <- Socket.authenticate_user(socket),
-         :ok <- Rooms.join_room(room_name, user) do
+         :ok <- Rooms.join(room_name, user) do
       {:ok, {socket, RoomsSerializer.serialize(:join, {room_name, user})}}
     else
       {:error, _} = error -> {:ok, {socket, ErrorsSerializer.serialize(error)}}
@@ -50,7 +50,7 @@ defmodule PlanningPoker.Controllers.RoomsController do
   @spec leave(Socket.t(), String.t()) :: {:ok, {Socket.t(), String.t()}}
   def leave(%{user: user} = socket, room_name) do
     with :ok <- Socket.authenticate_user(socket),
-         :ok <- Rooms.leave_room(room_name, user) do
+         :ok <- Rooms.leave(room_name, user) do
       {:ok, {socket, RoomsSerializer.serialize(:leave, {room_name, user})}}
     else
       {:error, _} = error -> {:ok, {socket, ErrorsSerializer.serialize(error)}}

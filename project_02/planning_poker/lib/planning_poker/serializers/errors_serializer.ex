@@ -35,6 +35,10 @@ defmodule PlanningPoker.Serializers.ErrorsSerializer do
     "Invalid vote argument"
   end
 
+  def serialize({:error, :invalid_route}) do
+    "Unknown request"
+  end
+
   def serialize({:error, msg}) do
     "Error: #{inspect(msg)}"
   end
