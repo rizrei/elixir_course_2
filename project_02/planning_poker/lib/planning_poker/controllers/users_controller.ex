@@ -1,6 +1,5 @@
 defmodule PlanningPoker.Controllers.UsersController do
   alias PlanningPoker.Users
-  alias PlanningPoker.PubSub
   alias PlanningPoker.Sockets.Socket
   alias PlanningPoker.Serializers.UsersSerializer
 
@@ -18,8 +17,7 @@ defmodule PlanningPoker.Controllers.UsersController do
   @spec logout(Socket.t()) :: {:ok, {Socket.t(), String.t()}}
   def logout(%{user: user} = socket) do
     with :ok <- Socket.authenticate_user(socket),
-         %Socket{} = socket <- Socket.logout(socket),
-         :ok <- PubSub.broadcast(:pubsub, "users", {:user_logout, user}) do
+         %Socket{} = socket <- Socket.logout(socket) do
       {:ok, {socket, UsersSerializer.serialize(:logout, user)}}
     end
   end

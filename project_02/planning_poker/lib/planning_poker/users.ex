@@ -1,6 +1,8 @@
 defmodule PlanningPoker.Users do
   alias PlanningPoker.Users.User
 
+  def users_topic(), do: "users"
+
   def get_users() do
     [
       %User{id: 1, name: "Yura", role: :participant},

@@ -22,7 +22,6 @@ defmodule PlanningPoker.Rooms.Room.Supervisor do
     case DynamicSupervisor.terminate_child(__MODULE__, room_pid) do
       :ok -> :ok
       {:error, :not_found} -> {:error, :room_not_found}
-      {:error, _} = error -> error
     end
   end
 

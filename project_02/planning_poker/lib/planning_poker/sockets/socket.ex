@@ -1,4 +1,6 @@
 defmodule PlanningPoker.Sockets.Socket do
+  alias PlanningPoker.PubSub
+  alias PlanningPoker.Users
   alias PlanningPoker.Users.User
   alias PlanningPoker.Sockets.Socket.Router
 
@@ -24,7 +26,12 @@ defmodule PlanningPoker.Sockets.Socket do
   def login(socket, user), do: %{socket | user: user}
 
   @spec logout(t()) :: t()
-  def logout(socket), do: %{socket | user: nil}
+  def logout(%{user: %User{} = user} = socket) do
+    PubSub.broadcast(:pubsub, Users.users_topic(), {:user_logout, user})
+    %{socket | user: nil}
+  end
+
+  def logout(socket), do: socket
 
   @spec authenticate_user(t()) :: :ok | {:error, :unauthenticated_user}
   def authenticate_user(%{user: %User{}}), do: :ok

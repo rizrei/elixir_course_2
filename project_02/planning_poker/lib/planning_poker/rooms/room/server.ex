@@ -3,6 +3,7 @@ defmodule PlanningPoker.Rooms.Room.Server do
 
   alias PlanningPoker.PubSub
   alias PlanningPoker.Rooms.Room
+  alias PlanningPoker.Users
   alias PlanningPoker.Users.User
 
   @spec start_link(room_name :: String.t()) :: GenServer.on_start()
@@ -31,7 +32,7 @@ defmodule PlanningPoker.Rooms.Room.Server do
 
   @impl true
   def init(room_name) do
-    PubSub.subscribe(:pubsub, "users")
+    PubSub.subscribe(:pubsub, Users.users_topic())
     {:ok, Room.new(room_name)}
   end
 
@@ -43,10 +44,7 @@ defmodule PlanningPoker.Rooms.Room.Server do
     end
   end
 
-  @impl true
-  def handle_call(:show, _from, room) do
-    {:reply, room, room}
-  end
+  def handle_call(:show, _from, room), do: {:reply, room, room}
 
   def handle_call({:leave, user}, _from, room) do
     case Room.leave(room, user) do

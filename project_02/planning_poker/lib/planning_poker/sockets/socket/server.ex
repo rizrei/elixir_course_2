@@ -13,7 +13,6 @@ defmodule PlanningPoker.Sockets.Socket.Server do
 
   @impl true
   def init(port) do
-    # Logger.info("Session #{inspect(self())} has started, #{inspect(state)}")
     {:ok, %Socket{port: port}, {:continue, :listen_socket}}
   end
 
@@ -39,11 +38,8 @@ defmodule PlanningPoker.Sockets.Socket.Server do
 
   @impl true
   def handle_info(:loop, %{socket_pid: socket_pid} = socket) do
-    # IO.puts("Session #{inspect self()} #{state.session_id} is waiting for data #{inspect state}")
     case :gen_tcp.recv(socket_pid, 0, 1000) do
       {:ok, data} ->
-        # IO.puts("Session #{state.session_id} has got data #{inspect(data)}")
-
         {socket, response} = Socket.handle_request(socket, String.trim(data))
         :gen_tcp.send(socket_pid, response <> "\n")
         send(self(), :loop)
@@ -53,9 +49,7 @@ defmodule PlanningPoker.Sockets.Socket.Server do
         send(self(), :loop)
         {:noreply, socket}
 
-      {:error, error} ->
-        # IO.puts("Session #{state.session_id} has got #{inspect(error)}")
-        Logger.info("Error", error: error)
+      {:error, _error} ->
         :gen_tcp.close(socket_pid)
         socket = Socket.logout(socket)
         {:noreply, socket, {:continue, :listen_socket}}
