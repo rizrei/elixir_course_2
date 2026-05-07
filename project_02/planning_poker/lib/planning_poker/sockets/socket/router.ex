@@ -37,7 +37,7 @@ defmodule PlanningPoker.Sockets.Socket.Router do
         {:ok, {PlanningPoker.Controllers.RoomsController, :change_topic, args}}
 
       _ ->
-        {:error, :invald_route}
+        {:error, :invalid_route}
     end
   end
 
@@ -47,9 +47,9 @@ defmodule PlanningPoker.Sockets.Socket.Router do
         {:ok, {PlanningPoker.Controllers.RoomsController, :vote, args}}
 
       _ ->
-        {:error, :invald_route}
+        {:error, :invalid_route}
     end
   end
 
-  def route(_), do: {:error, :invald_route}
+  def route(_), do: {:error, :invalid_route}
 end

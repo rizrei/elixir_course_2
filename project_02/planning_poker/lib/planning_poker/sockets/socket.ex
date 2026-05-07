@@ -18,7 +18,7 @@ defmodule PlanningPoker.Sockets.Socket do
          {:ok, {socket, msg}} <- apply(controller, action, [socket | args]) do
       {socket, msg}
     else
-      {:error, :invald_route} -> {socket, "Unknown request"}
+      {:error, :invalid_route} -> {socket, "Unknown request"}
     end
   end
 

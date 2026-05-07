@@ -24,7 +24,7 @@ defmodule PlanningPoker.Rooms.Room do
   @spec change_topic(t(), String.t()) :: t()
   def change_topic(room, topic), do: %{room | topic: topic}
 
-  @spec vote(t(), User.t(), integer()) :: t() | {:error, atom()}
+  @spec vote(t(), User.t(), integer() | String.t()) :: t() | {:error, atom()}
   def vote(room, user, vote) when is_binary(vote) do
     case Integer.parse(vote) do
       {int_vote, ""} -> vote(room, user, int_vote)
