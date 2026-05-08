@@ -17,21 +17,21 @@ defmodule PlanningPoker.Sockets.Socket.RouterTest do
 
   describe "route/1 - room list commands" do
     test "routes list_rooms command" do
-      assert {:ok, {RoomsController, :index, []}} = Router.route("list_rooms")
+      assert {:ok, {RoomsController, :index, []}} = Router.route("list")
     end
 
     test "routes show_room command" do
-      assert {:ok, {RoomsController, :show, ["planning"]}} = Router.route("show_room planning")
+      assert {:ok, {RoomsController, :show, ["planning"]}} = Router.route("show planning")
     end
   end
 
   describe "route/1 - room management commands" do
     test "routes create_room command" do
-      assert {:ok, {RoomsController, :create, ["sprint1"]}} = Router.route("create_room sprint1")
+      assert {:ok, {RoomsController, :create, ["sprint1"]}} = Router.route("create sprint1")
     end
 
     test "routes delete_room command" do
-      assert {:ok, {RoomsController, :delete, ["sprint1"]}} = Router.route("delete_room sprint1")
+      assert {:ok, {RoomsController, :delete, ["sprint1"]}} = Router.route("delete sprint1")
     end
   end
 
@@ -48,11 +48,11 @@ defmodule PlanningPoker.Sockets.Socket.RouterTest do
   describe "route/1 - room voting commands" do
     test "routes change_topic command" do
       assert {:ok, {RoomsController, :change_topic, ["room1", "new topic"]}} =
-               Router.route("change_topic room1:new topic")
+               Router.route("topic room1:new topic")
     end
 
     test "returns error for malformed change_topic command" do
-      assert {:error, :invalid_route} = Router.route("change_topic room1")
+      assert {:error, :invalid_route} = Router.route("topic room1")
     end
 
     test "routes vote command" do

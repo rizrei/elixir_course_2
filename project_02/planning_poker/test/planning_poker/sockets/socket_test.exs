@@ -1,6 +1,5 @@
 defmodule PlanningPoker.Sockets.SocketTest do
   use ExUnit.Case
-  doctest PlanningPoker.Sockets.Socket
 
   alias PlanningPoker.Sockets.Socket
   alias PlanningPoker.Users.User
@@ -9,7 +8,7 @@ defmodule PlanningPoker.Sockets.SocketTest do
   setup do
     user = %User{id: 1, name: "TestUser", role: :leader}
     socket = %Socket{socket_pid: self(), user: nil}
-    Rooms.create_room("Room1", user)
+    Rooms.create("Room1", user)
 
     {:ok, user: user, socket: socket}
   end
@@ -52,7 +51,7 @@ defmodule PlanningPoker.Sockets.SocketTest do
 
   describe "handle_request/2" do
     test "routes requests to controllers", %{socket: socket} do
-      assert {%Socket{}, "Rooms:\nRoom1"} = Socket.handle_request(socket, "list_rooms")
+      assert {%Socket{}, "Rooms:\nRoom1\n"} = Socket.handle_request(socket, "list")
     end
 
     test "returns error message for invalid request", %{socket: socket} do
