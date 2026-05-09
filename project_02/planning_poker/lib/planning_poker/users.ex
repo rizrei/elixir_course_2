@@ -8,7 +8,8 @@ defmodule PlanningPoker.Users do
       %User{id: 1, name: "Yura", role: :participant},
       %User{id: 2, name: "Bob", role: :participant},
       %User{id: 3, name: "Helen", role: :leader},
-      %User{id: 4, name: "Kate", role: :participant}
+      %User{id: 4, name: "Kate", role: :participant},
+      %User{id: 5, name: "Alice", role: :leader}
     ]
   end
 
