@@ -19,6 +19,8 @@ defmodule PlanningPoker.Controllers.UsersController do
     with :ok <- Socket.authenticate_user(socket),
          %Socket{} = socket <- Socket.logout(socket) do
       {:ok, {socket, UsersSerializer.serialize(:logout, user)}}
+    else
+      {:error, _} = error -> {:ok, {socket, ErrorsSerializer.serialize(error)}}
     end
   end
 end

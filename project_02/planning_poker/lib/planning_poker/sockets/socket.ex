@@ -19,7 +19,7 @@ defmodule PlanningPoker.Sockets.Socket do
          {:ok, {socket, msg}} <- apply(controller, action, [socket | args]) do
       {socket, msg <> "\n"}
     else
-      {:error, :invalid_route} = error -> {socket, ErrorsSerializer.serialize(error)}
+      {:error, _} = error -> {socket, ErrorsSerializer.serialize(error)}
     end
   end
 

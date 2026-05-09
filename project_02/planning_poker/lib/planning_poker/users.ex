@@ -15,9 +15,6 @@ defmodule PlanningPoker.Users do
   def get_user_by_name(name) do
     get_users()
     |> Enum.find(&(&1.name == name))
-    |> case do
-      %User{} = user -> {:ok, user}
-      _ -> {:error, :user_not_found}
-    end
+    |> then(&((&1 && {:ok, &1}) || {:error, :user_not_found}))
   end
 end
