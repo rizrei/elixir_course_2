@@ -5,8 +5,9 @@ defmodule PlanningPoker.MixProject do
     [
       app: :planning_poker,
       version: "0.1.0",
-      elixir: "~> 1.13",
+      elixir: "~> 1.9",
       start_permanent: Mix.env() == :prod,
+      elixirc_paths: elixirc_paths(Mix.env()),
       deps: deps()
     ]
   end
@@ -15,15 +16,24 @@ defmodule PlanningPoker.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {PlanningPoker, :no_args}
+      mod: {PlanningPoker.Application, []}
     ]
   end
 
-  # Run "mix help deps" to learn about dependencies.
-  defp deps do
+  def cli do
     [
-      # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
+      preferred_envs: [release: :prod]
     ]
   end
+
+  defp deps do
+    [
+      {:poolboy, "~> 1.5.1"},
+      {:dialyxir, "~> 1.4", only: [:dev], runtime: false},
+      {:credo, "~> 1.7", only: [:dev], runtime: false}
+    ]
+  end
+
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
 end
